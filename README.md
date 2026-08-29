@@ -12,6 +12,34 @@ Provides inline storage for a lazily created, atomically published `Lock`.
 dotnet add package Soenneker.Atomics.ValueLocks
 ```
 
+## Usage
+
+Keep the mutable struct in a field and lock on the single published `System.Threading.Lock`:
+
+```csharp
+using Soenneker.Atomics.ValueLocks;
+
+public sealed class CacheIndex
+{
+    private ValueAtomicLock _sync;
+    private readonly Dictionary<string, int> _values = new();
+
+    public void Set(string key, int value)
+    {
+        lock (_sync.Get())
+        {
+            _values[key] = value;
+        }
+    }
+}
+```
+
+The default struct is ready to use and allocates its `Lock` only on first access. Racing callers can allocate temporary candidates, but all calls on the same struct storage return the one atomically published lock.
+
+Never access this type through a property that returns it by value. Copying before initialization lets each copy publish a different lock, so callers would appear synchronized while entering separate critical sections.
+
+`ValueAtomicLock` provides synchronous locking only. Use an async-compatible mutex when the protected operation must await.
+
 ## What you get
 
 - `ValueAtomicLock` — Provides inline storage for a lazily created, atomically published `Lock`.
