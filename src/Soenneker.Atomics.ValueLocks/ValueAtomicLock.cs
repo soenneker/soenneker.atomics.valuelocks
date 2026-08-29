@@ -43,6 +43,7 @@ public struct ValueAtomicLock
     /// <summary>
     /// Gets the single published lock, creating and atomically publishing it when uninitialized.
     /// </summary>
+    /// <returns>The requested lock.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Lock Get()
     {
