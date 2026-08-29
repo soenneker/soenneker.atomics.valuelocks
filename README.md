@@ -2,32 +2,28 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.atomics.valuelocks/publish-package.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.atomics.valuelocks/actions/workflows/publish-package.yml)
 [![](https://img.shields.io/nuget/dt/soenneker.atomics.valuelocks.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.atomics.valuelocks/)
 
-# ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Atomics.ValueLocks
-### Lightweight value-type synchronization with atomically published lock storage.
+# Soenneker.Atomics.ValueLocks
 
-## Installation
+Provides inline storage for a lazily created, atomically published `Lock`.
 
-```
+## Install
+
+```bash
 dotnet add package Soenneker.Atomics.ValueLocks
 ```
 
-## Usage
+## What you get
 
-```csharp
-using Soenneker.Atomics.ValueLocks;
+- `ValueAtomicLock` — Provides inline storage for a lazily created, atomically published `Lock`.
 
-public sealed class Cache
-{
-    private ValueAtomicLock _sync;
+## API at a glance
 
-    public void Update()
-    {
-        lock (_sync.Get())
-        {
-            // Protected work
-        }
-    }
-}
-```
+| API | What it does | Result / important behavior |
+| --- | --- | --- |
+| `ValueAtomicLock.IsValueCreated` | Gets a value indicating whether the lock has been created. | Gets a value indicating whether the lock has been created. |
+| `ValueAtomicLock.Value` | Gets the single published lock, creating it if necessary. | Gets the single published lock, creating it if necessary. |
+| `ValueAtomicLock.Get()` | Gets the single published lock, creating and atomically publishing it when uninitialized. | The requested lock. |
 
-`ValueAtomicLock` occupies one reference-sized field and creates its `System.Threading.Lock` only on first use. It is a mutable struct intended to remain a private field; copying an uninitialized instance can create independent lock domains.
+## Important behavior
+
+- `ValueAtomicLock`: The default value is ready to use and does not allocate until `Get` is first called. Concurrent callers may create temporary candidates, but every caller receives the single published lock. This is a mutable `struct` intended for use as a private field. Avoid copying it before initialization because each copy can publish a different lock and therefore establish a different lock domain.
