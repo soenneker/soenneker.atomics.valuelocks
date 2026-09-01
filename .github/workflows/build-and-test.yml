@@ -40,5 +40,11 @@ jobs:
       - name: Test
         run: dotnet test --project test/Soenneker.Atomics.ValueLocks.Tests/Soenneker.Atomics.ValueLocks.Tests.csproj --configuration Release --no-build --no-restore --verbosity minimal
 
+      - name: Restore library
+        run: dotnet restore src/Soenneker.Atomics.ValueLocks/Soenneker.Atomics.ValueLocks.csproj --verbosity minimal
+
+      - name: Build library
+        run: dotnet build src/Soenneker.Atomics.ValueLocks/Soenneker.Atomics.ValueLocks.csproj --configuration Release --no-restore --verbosity minimal
+
       - name: Pack
         run: dotnet pack src/Soenneker.Atomics.ValueLocks/Soenneker.Atomics.ValueLocks.csproj --configuration Release --no-build --no-restore --output . --verbosity minimal
