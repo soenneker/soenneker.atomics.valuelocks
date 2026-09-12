@@ -51,6 +51,12 @@ public struct ValueAtomicLock
         if (value is not null)
             return value;
 
+        return Create();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private Lock Create()
+    {
         var created = new Lock();
         return Interlocked.CompareExchange(ref _value, created, null) ?? created;
     }
